@@ -6,15 +6,15 @@ set -euo pipefail
 
 # [AWS 핵심 변경점] 로컬 k3d(도커 위 가상 클러스터) 대신, AWS EC2 가상 서버 자체에 
 # 가볍고 강력한 경량화 쿠버네티스인 'K3s'를 직접 다운로드하여 설치합니다.
-# 로컬 환경과 동일하게 기본 내장 인그레스(Traefik)는 비활성화 처리합니다.
-curl -sfL https://get.k3s.io | sh -s - --disable=traefik
+# 기본 내장 인그레스(Traefik)는 비활성화 처리하며, 8081 포트 사용을 위해 NodePort 서비스 포트 범위를 전체(1-65535)로 확장합니다.
+curl -sfL https://get.k3s.io | sh -s - --disable=traefik --kube-apiserver-arg="service-node-port-range=1-65535"
 
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 sudo chmod 644 /etc/rancher/k3s/k3s.yaml
 # K3s 서버가 실행된 후, 관리자 명령어(kubectl)가 인증 에러 없이 
 # 쿠버네티스 엔진과 바로 통신할 수 있도록 설정 파일의 권한과 경로를 환경 변수에 바인딩합니다.
 
-# ---- 이 아래 라인부터는 기존 로컬 검증용 코드와 100% 동일한 선언형 엔진 로직입니다 ----
+# ---- 선언형 엔진 로직 시작 ----
 
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 # 'argocd'라는 독립된 시스템 작업 공간(네임스페이스)을 생성합니다.
@@ -36,11 +36,14 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 echo
 # 가독성을 위한 줄바꿈 처리입니다.
 
+# [네트워크 노출 설정 추가] ClusterIP로 설정된 argocd-server 서비스를 NodePort 타입으로 변경하고 외부 포트를 8081로 고정 매핑합니다.
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort", "ports": [{"name": "http", "port": 80, "targetPort": 8080, "nodePort": 8081}, {"name": "https", "port": 443, "targetPort": 8080, "nodePort": 8082}]}}'
+
 echo "================================================================"
 echo "[안내] AWS 클라우드 인프라 셋업이 성공적으로 완료되었습니다."
 echo "1. AWS 웹 콘솔 -> EC2 인바운드 보안 그룹에서 아래 포트를 반드시 열어주세요."
 echo "   - 8081 (ArgoCD 웹 UI 접근용)"
 echo "   - 30080 (스프링부트 자바 API 서버 접근용)"
 echo "2. 외부 접속 시 포트 포워딩 명령어가 더 이상 필요하지 않습니다."
-echo "   - 접속 주소: http://<당신의-AWS-EC2-공인IP>:8081"
+echo "   - 접속 주소: https://<당신의-AWS-EC2-공인IP>:8081"
 echo "================================================================"
