@@ -1,10 +1,11 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1 # Kustomize가 사용할 API 버전을 정의합니다.
+kind: Kustomization # 생성할 쿠버네티스 리소스의 종류가 '커스터마이즈(설정 조작용)'임을 명시합니다.
 
-resources:
-  - deployment.yaml
-  - service.yaml
+resources: # 이 커스터마이즈 설정이 제어하고 묶어줄 원본 쿠버네티스 리소스 파일 목록입니다.
+  - deployment.yaml # 원본 애플리케이션 배포 명세서(Deployment) 파일을 포함합니다.
+  - service.yaml # 원본 네트워크 서비스 명세서(Service) 파일을 포함합니다.
 
-images:
-  - name: docker.io/your-dockerhub-username/main-api-server
-    newTag: local
+images: # 배포 시점에 원본 명세서(deployment.yaml) 안에 적힌 도커 이미지 설정을 동적으로 치환하는 규칙입니다.
+  - name: docker.io/your-dockerhub-username/main-api-server # [찾기용 이름] 원본 deployment.yaml에서 이 이름으로 된 이미지 주소를 검색합니다.
+    newTag: local # [초기 태그값] 기본 상태일 때 사용할 기본 이미지 태그 정보입니다.
+    # (※ 깃허브 액션스가 구동되면 위 name 문자열을 추적하여 newName에는 실제 계정명 jheon340을, newTag에는 빌드된 커밋 해시 태그를 자동으로 채워서 배포하게 됩니다.)

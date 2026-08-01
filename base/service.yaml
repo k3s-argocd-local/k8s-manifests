@@ -1,15 +1,15 @@
-apiVersion: v1
-kind: Service
+apiVersion: v1 # 이 서비스 스크립트가 사용할 쿠버네티스 코어 API의 버전을 정의합니다.
+kind: Service # 생성할 쿠버네티스 리소스의 종류가 다수의 파드를 묶어주는 '서비스'임을 명시합니다.
 metadata:
-  name: main-api-server
+  name: main-api-server # 이 서비스 리소스의 고유 이름을 지정합니다[cite: 5].
   labels:
-    app: main-api-server
+    app: main-api-server # 관리 편의를 위해 이 서비스 리소스에 'main-api-server'라는 태그(라벨)를 붙입니다[cite: 5].
 spec:
-  type: NodePort
+  type: NodePort # 외부 컴퓨터(내 PC 브라우저 등)에서 클러스터 내부 파드에 직접 접속할 수 있도록 포트를 외부에 개방하는 타입입니다[cite: 5].
   selector:
-    app: main-api-server
+    app: main-api-server # 이 서비스가 트래픽을 분산해서 보내줄 목적지 파드들의 태그(라벨) 대상을 지정합니다[cite: 3, 5].
   ports:
-    - name: http
-      port: 80
-      targetPort: http
-      nodePort: 30080
+    - name: http # 이 포트 매핑 설정의 이름을 'http'로 지정합니다[cite: 5].
+      port: 80 # 쿠버네티스 클러스터 '내부'에서 다른 파드들이 이 서비스를 호출할 때 사용하는 대표 포트입니다[cite: 5].
+      targetPort: http # 트래픽을 최종적으로 전달할 파드 내부의 실제 포트(위에 설정한 디플로이먼트의 http 즉, 8080)입니다[cite: 3, 5].
+      nodePort: 30080 # 내 PC 웹 브라우저 등에서 클러스터 외부 접속 시 사용할 포트 번호입니다 (ex: http://localhost:30080)[cite: 2, 5].
