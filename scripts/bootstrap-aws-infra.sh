@@ -37,6 +37,7 @@ echo
 # 가독성을 위한 줄바꿈 처리입니다.
 
 # [네트워크 노출 설정 추가] ClusterIP로 설정된 argocd-server 서비스를 NodePort 타입으로 변경하고 외부 포트를 8081로 고정 매핑합니다.
+sleep 5
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort", "ports": [{"name": "http", "port": 80, "targetPort": 8080, "nodePort": 8081}, {"name": "https", "port": 443, "targetPort": 8080, "nodePort": 8082}]}}'
 
 echo "================================================================"
