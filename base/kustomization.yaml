@@ -7,5 +7,6 @@ resources: # 이 커스터마이즈 설정이 제어하고 묶어줄 원본 쿠�
 
 images: # 배포 시점에 원본 명세서(deployment.yaml) 안에 적힌 도커 이미지 설정을 동적으로 치환하는 규칙입니다.
   - name: docker.io/your-dockerhub-username/main-api-server # [찾기용 이름] 원본 deployment.yaml에서 이 이름으로 된 이미지 주소를 검색합니다.
-    newTag: local # [초기 태그값] 기본 상태일 때 사용할 기본 이미지 태그 정보입니다.
+    newName: docker.io/jheon340/main-api-server
+    newTag: 832f8aa
     # (※ 깃허브 액션스가 구동되면 위 name 문자열을 추적하여 newName에는 실제 계정명 jheon340을, newTag에는 빌드된 커밋 해시 태그를 자동으로 채워서 배포하게 됩니다.)
