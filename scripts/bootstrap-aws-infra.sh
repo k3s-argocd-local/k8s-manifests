@@ -19,8 +19,9 @@ sudo chmod 644 /etc/rancher/k3s/k3s.yaml
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 # 'argocd'라는 독립된 시스템 작업 공간(네임스페이스)을 생성합니다.
 
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-# ArgoCD 공식 원격 저장소에서 검증된 설치 파일을 가져와 클러스터 내부에 배포합니다.
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.12.8/manifests/install.yaml
+# 용량 초과 버그가 없는 안정화 버전 중 가장 최신 패치 버전인 v2.12.8을 고정하여 배포합니다.
+# 이를 통해 CRD 용량 제한 오류를 근본적으로 우회합니다.
 
 kubectl -n argocd rollout status deployment/argocd-server --timeout=300s
 # ArgoCD의 메인 웹 서버 엔진 파드가 완전히 정상 구동될 때까지 최대 300초간 대기합니다.
