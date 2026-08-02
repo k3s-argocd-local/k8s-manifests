@@ -8,4 +8,4 @@ resources:
 images:
 - name: docker.io/your-dockerhub-username/main-api-server
   newName: docker.io/jheon340/main-api-server
-  newTag: b866c99
+  newTag: 2d3e03d
